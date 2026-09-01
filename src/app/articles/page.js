@@ -1,10 +1,10 @@
 import ArticleCard from '@/components/ArticleCard';
-import { getStoryblokApi } from '@/lib/storyblok';
+import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export default async function ArticlesPage() {
 	const storyblokApi = getStoryblokApi();
 	const { data } = await storyblokApi.get('cdn/stories', {
-		version: 'draft',
+		version: SB_VERSION,
 		content_type: 'article',
 		resolve_relations: 'article.author',
 	});

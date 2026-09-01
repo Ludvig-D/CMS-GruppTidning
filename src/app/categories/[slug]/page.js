@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import FilteredPosts from '@/components/FilteredPosts';
-import { getStoryblokApi } from '@/lib/storyblok';
+import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export async function generateStaticParams() {
 	const storyblokApi = getStoryblokApi();
 	const { data } = await storyblokApi.get('cdn/stories', {
-		version: 'draft',
+		version: SB_VERSION,
 		content_type: 'category',
 	});
 	return data.stories.map((story) => ({ slug: story.slug }));
@@ -18,7 +18,7 @@ export default async function CategoryPage({ params }) {
 	let categoryStory;
 	try {
 		const { data } = await storyblokApi.get(`cdn/stories/categories/${slug}`, {
-			version: 'draft',
+			version: SB_VERSION,
 		});
 		categoryStory = data.story;
 	} catch {
