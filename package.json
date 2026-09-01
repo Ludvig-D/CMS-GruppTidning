@@ -13,7 +13,8 @@
     "@storyblok/react": "^5.4.22",
     "next": "16.1.6",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "storyblok-rich-text-react-renderer": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
