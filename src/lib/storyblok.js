@@ -10,6 +10,11 @@ import FilteredPosts from '@/components/FilteredPosts';
 import NavLink from '@/components/blocks/NavLink';
 import { apiPlugin, storyblokInit } from '@storyblok/react/rsc';
 
+// Draft content is only fetched in dev, so a leaked delivery token never exposes
+// unpublished drafts in production (see README's Vercel deploy checklist for the
+// matching token requirement).
+export const SB_VERSION = process.env.NODE_ENV === 'production' ? 'published' : 'draft';
+
 export const getStoryblokApi = storyblokInit({
 	accessToken: process.env.STORYBLOK_DELIVERY_API_TOKEN,
 	use: [apiPlugin],

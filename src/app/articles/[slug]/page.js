@@ -1,19 +1,27 @@
+import { notFound } from 'next/navigation';
 import { render } from 'storyblok-rich-text-react-renderer';
-import { getStoryblokApi } from '@/lib/storyblok';
+import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 async function getArticle(slug) {
 	const storyblokApi = getStoryblokApi();
-	const { data } = await storyblokApi.get(`cdn/stories/articles/${slug}`, {
-		version: 'draft',
-		resolve_relations: 'article.author',
-	});
-	return data.story;
+	let story;
+	try {
+		const { data } = await storyblokApi.get(`cdn/stories/articles/${slug}`, {
+			version: SB_VERSION,
+			resolve_relations: 'article.author',
+		});
+		story = data.story;
+	} catch {
+		notFound();
+	}
+	if (!story) notFound();
+	return story;
 }
 
 export async function generateStaticParams() {
 	const storyblokApi = getStoryblokApi();
 	const { data } = await storyblokApi.get('cdn/stories', {
-		version: 'draft',
+		version: SB_VERSION,
 		content_type: 'article',
 	});
 	return data.stories.map((story) => ({ slug: story.slug }));
@@ -21,11 +29,18 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
 	const { slug } = await params;
-	const story = await getArticle(slug);
-	return {
-		title: story.content.title,
-		description: story.content.summary,
-	};
+	try {
+		const storyblokApi = getStoryblokApi();
+		const { data } = await storyblokApi.get(`cdn/stories/articles/${slug}`, {
+			version: SB_VERSION,
+		});
+		return {
+			title: data.story.content.title,
+			description: data.story.content.summary,
+		};
+	} catch {
+		return { title: 'Artikel' };
+	}
 }
 
 export default async function ArticlePage({ params }) {

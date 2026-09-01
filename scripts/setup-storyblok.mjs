@@ -197,6 +197,9 @@ export async function seedContent(spaceId) {
 					component: 'nav-link', label: 'Artiklar', link: { url: '/articles' },
 					sub_links: [
 						{ component: 'nav-link', label: 'Alla artiklar', link: { url: '/articles' } },
+						...CATEGORY_ENTRIES.map((e) => ({
+							component: 'nav-link', label: e.name, link: { url: `/categories/${e.value}` },
+						})),
 					],
 				},
 			],
