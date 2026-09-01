@@ -7,6 +7,20 @@ if (!MGMT_TOKEN) throw new Error('STORYBLOK_MGMT_TOKEN is required');
 
 const client = new StoryblokClient({ oauthToken: MGMT_TOKEN });
 
+async function fetchAllPages(url, key, params = {}) {
+	const per_page = 100;
+	let page = 1;
+	let all = [];
+	while (true) {
+		const { data } = await client.get(url, { ...params, per_page, page });
+		const items = data[key];
+		all = all.concat(items);
+		if (items.length < per_page) break;
+		page += 1;
+	}
+	return all;
+}
+
 export async function getOrCreateSpace() {
 	if (process.env.STORYBLOK_SPACE_ID) {
 		return Number(process.env.STORYBLOK_SPACE_ID);
@@ -21,8 +35,8 @@ export async function getOrCreateSpace() {
 }
 
 export async function upsertComponent(spaceId, schema) {
-	const { data } = await client.get(`spaces/${spaceId}/components`);
-	const existing = data.components.find((c) => c.name === schema.name);
+	const components = await fetchAllPages(`spaces/${spaceId}/components`, 'components');
+	const existing = components.find((c) => c.name === schema.name);
 	if (existing) {
 		await client.put(`spaces/${spaceId}/components/${existing.id}`, { component: schema });
 		console.log(`Updated component ${schema.name}`);
@@ -42,8 +56,8 @@ const CATEGORY_ENTRIES = [
 ];
 
 export async function upsertDatasource(spaceId) {
-	const { data } = await client.get(`spaces/${spaceId}/datasources`);
-	let ds = data.datasources.find((d) => d.slug === 'article-categories');
+	const datasources = await fetchAllPages(`spaces/${spaceId}/datasources`, 'datasources');
+	let ds = datasources.find((d) => d.slug === 'article-categories');
 	if (!ds) {
 		const { data: created } = await client.post(`spaces/${spaceId}/datasources`, {
 			datasource: { name: 'Article Categories', slug: 'article-categories' },
@@ -51,11 +65,11 @@ export async function upsertDatasource(spaceId) {
 		ds = created.datasource;
 		console.log('Created datasource article-categories');
 	}
-	const { data: entriesData } = await client.get(`spaces/${spaceId}/datasource_entries`, {
+	const entries = await fetchAllPages(`spaces/${spaceId}/datasource_entries`, 'datasource_entries', {
 		datasource_id: ds.id,
 	});
 	for (const entry of CATEGORY_ENTRIES) {
-		if (entriesData.datasource_entries.some((e) => e.value === entry.value)) continue;
+		if (entries.some((e) => e.value === entry.value)) continue;
 		await client.post(`spaces/${spaceId}/datasource_entries`, {
 			datasource_entry: { ...entry, datasource_id: ds.id },
 		});
