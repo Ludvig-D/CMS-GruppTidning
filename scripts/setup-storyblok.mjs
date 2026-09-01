@@ -86,8 +86,8 @@ const COMPONENTS = [
 			bio: { type: 'textarea' },
 			photo: { type: 'asset' },
 		},
-		is_root: false,
-		is_nestable: true,
+		is_root: true,
+		is_nestable: false,
 	},
 	{
 		name: 'article',
@@ -102,8 +102,8 @@ const COMPONENTS = [
 			},
 			author: { type: 'option', source: 'internal_stories', filtr_content_type: 'author' },
 		},
-		is_root: false,
-		is_nestable: true,
+		is_root: true,
+		is_nestable: false,
 	},
 	{
 		name: 'filtered-posts',
@@ -148,8 +148,121 @@ export async function setupComponentsAndDatasource(spaceId) {
 	await upsertDatasource(spaceId);
 }
 
+export async function upsertFolder(spaceId, name, slug) {
+	const stories = await fetchAllPages(`spaces/${spaceId}/stories`, 'stories', { folder_only: 1 });
+	const existing = stories.find((s) => s.slug === slug);
+	if (existing) return existing.id;
+	const { data: created } = await client.post(`spaces/${spaceId}/stories`, {
+		story: { name, slug, is_folder: true },
+	});
+	console.log(`Created folder ${slug}`);
+	return created.story.id;
+}
+
+export async function upsertStory(spaceId, { name, slug, folderId, contentType, content }) {
+	// ponytail: `with_slug` filters on full_slug (folder/slug), but callers
+	// pass the bare leaf slug, so it never matches nested stories — list
+	// everything under the parent folder and match on parent_id + slug
+	// instead, same approach as upsertFolder above.
+	const stories = await fetchAllPages(`spaces/${spaceId}/stories`, 'stories');
+	const existing = stories.find((s) => s.parent_id === folderId && s.slug === slug);
+	if (existing) {
+		const story = existing;
+		await client.put(`spaces/${spaceId}/stories/${story.id}`, {
+			story: { content: { component: contentType, ...content } },
+		});
+		console.log(`Updated story ${slug}`);
+		return story;
+	}
+	const { data: created } = await client.post(`spaces/${spaceId}/stories`, {
+		story: {
+			name,
+			slug,
+			parent_id: folderId,
+			content: { component: contentType, ...content },
+		},
+		publish: 1,
+	});
+	console.log(`Created story ${slug}`);
+	return created.story;
+}
+
+export async function seedContent(spaceId) {
+	await upsertStory(spaceId, {
+		name: 'Config', slug: 'config', folderId: 0, contentType: 'config',
+		content: {
+			header: [
+				{ component: 'nav-link', label: 'Start', link: { url: '/' } },
+				{
+					component: 'nav-link', label: 'Artiklar', link: { url: '/articles' },
+					sub_links: [
+						{ component: 'nav-link', label: 'Alla artiklar', link: { url: '/articles' } },
+					],
+				},
+			],
+			footer_text: '© 2026 Artikelsajt',
+		},
+	});
+	await upsertStory(spaceId, {
+		name: 'Home', slug: 'home', folderId: 0, contentType: 'page', content: { body: [] },
+	});
+
+	const authorsFolderId = await upsertFolder(spaceId, 'Authors', 'authors');
+	const articlesFolderId = await upsertFolder(spaceId, 'Articles', 'articles');
+	const categoriesFolderId = await upsertFolder(spaceId, 'Categories', 'categories');
+
+	const anna = await upsertStory(spaceId, {
+		name: 'Anna Karlsson', slug: 'anna-karlsson', folderId: authorsFolderId, contentType: 'author',
+		content: { name: 'Anna Karlsson', bio: 'Ekonomijournalist med 10 års erfarenhet.', photo: {} },
+	});
+	const erik = await upsertStory(spaceId, {
+		name: 'Erik Sundin', slug: 'erik-sundin', folderId: authorsFolderId, contentType: 'author',
+		content: { name: 'Erik Sundin', bio: 'Skriver om teknik och samhälle.', photo: {} },
+	});
+
+	const richtext = (text) => ({
+		type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+	});
+
+	const articles = [
+		{ slug: 'riksbanken-lamnar-styrrantan-oforandrad', title: 'Riksbanken lämnar styrräntan oförändrad', summary: 'Räntebeskedet väntat av marknaden.', category: 'ekonomi', author: anna },
+		{ slug: 'sveriges-ekonomi-visar-styrka', title: 'Sveriges ekonomi visar styrka', summary: 'Nya siffror pekar uppåt.', category: 'nyheter', author: anna },
+		{ slug: 'ai-verktyg-forandrar-arbetslivet', title: 'AI-verktyg förändrar arbetslivet', summary: 'Fler branscher tar in AI i vardagen.', category: 'teknik', author: erik },
+		{ slug: 'sa-kommer-du-igang-med-ditt-forsta-projekt', title: 'Så kommer du igång med ditt första projekt', summary: 'En guide för nybörjare.', category: 'guide', author: erik },
+	];
+
+	for (const a of articles) {
+		await upsertStory(spaceId, {
+			name: a.title, slug: a.slug, folderId: articlesFolderId, contentType: 'article',
+			content: {
+				title: a.title, summary: a.summary, content: richtext(a.summary),
+				category: a.category, author: a.author.uuid,
+			},
+		});
+	}
+
+	for (const entry of CATEGORY_ENTRIES) {
+		await upsertStory(spaceId, {
+			name: entry.name, slug: entry.value, folderId: categoriesFolderId, contentType: 'category',
+			content: { title: entry.name, body: [{ component: 'filtered-posts' }] },
+		});
+	}
+}
+
+export async function createPreviewToken(spaceId) {
+	// ponytail: the /api_keys endpoint 403s ("This endpoint does not support
+	// this token type") for Personal Access Tokens. The space's own
+	// `first_token` field is the default delivery API token — use that
+	// instead of provisioning a new key.
+	const { data } = await client.get(`spaces/${spaceId}`);
+	return data.space.first_token;
+}
+
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
 	const spaceId = await getOrCreateSpace();
 	await setupComponentsAndDatasource(spaceId);
-	console.log(`Space ready: ${spaceId}. Run 'STORYBLOK_SPACE_ID=${spaceId} node scripts/setup-storyblok.mjs' again to re-apply, or continue with Task 3's content step.`);
+	await seedContent(spaceId);
+	const token = await createPreviewToken(spaceId);
+	console.log(`Space ready: ${spaceId}.`);
+	console.log(`Delivery token (put in .env as STORYBLOK_DELIVERY_API_TOKEN): ${token}`);
 }
