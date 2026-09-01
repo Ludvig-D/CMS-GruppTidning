@@ -30,8 +30,12 @@ export default async function CategoryPage({ params }) {
 
 	return (
 		<div>
-			<h1 className="text-3xl font-bold mb-6">{category.title}</h1>
-			<FilteredPosts categorySlug={slug} />
+			<h1 className="font-display text-3xl font-bold text-ink mb-1 pb-3 border-b-2 border-signal inline-block">
+				{category.title}
+			</h1>
+			<div className="mt-6">
+				<FilteredPosts categorySlug={slug} />
+			</div>
 		</div>
 	);
 }
