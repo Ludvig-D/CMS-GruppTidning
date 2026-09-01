@@ -18,7 +18,7 @@ export default async function RootLayout({ children }) {
 		<StoryblokProvider>
 			<html lang="sv">
 				<body>
-					<Header navLinks={config.header} />
+					<Header navLinks={config.header || []} />
 					<main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
 					<Footer text={config.footer_text} />
 				</body>
