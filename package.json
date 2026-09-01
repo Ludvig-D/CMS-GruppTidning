@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup:storyblok": "node scripts/setup-storyblok.mjs"
   },
   "dependencies": {
     "@storyblok/react": "^5.4.22",
@@ -20,6 +21,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "eslint": "^10",
     "eslint-config-next": "16.1.6",
+    "storyblok-js-client": "^7.7.6",
     "tailwindcss": "^4.3.3"
   }
 }
