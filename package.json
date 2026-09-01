@@ -6,18 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup:storyblok": "node scripts/setup-storyblok.mjs"
   },
   "dependencies": {
     "@storyblok/react": "^5.4.22",
     "next": "^16.3.4",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "storyblok-rich-text-react-renderer": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@netlify/plugin-nextjs": "^5.15.8",
+    "@tailwindcss/postcss": "^4.3.3",
     "eslint": "^10",
-    "eslint-config-next": "16.1.6"
+    "eslint-config-next": "16.1.6",
+    "storyblok-js-client": "^7.7.6",
+    "tailwindcss": "^4.3.3"
   }
 }
