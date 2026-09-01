@@ -1,11 +1,11 @@
 import ArticleCard from '@/components/ArticleCard';
-import { getStoryblokApi } from '@/lib/storyblok';
+import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export default async function FilteredPosts({ categorySlug }) {
 	if (!categorySlug) return null;
 	const storyblokApi = getStoryblokApi();
 	const { data } = await storyblokApi.get('cdn/stories', {
-		version: 'draft',
+		version: SB_VERSION,
 		content_type: 'article',
 		resolve_relations: 'article.author',
 		filter_query: { category: { in: categorySlug } },
