@@ -1,0 +1,37 @@
+import { notFound } from 'next/navigation';
+import FilteredPosts from '@/components/FilteredPosts';
+import { getStoryblokApi } from '@/lib/storyblok';
+
+export async function generateStaticParams() {
+	const storyblokApi = getStoryblokApi();
+	const { data } = await storyblokApi.get('cdn/stories', {
+		version: 'draft',
+		content_type: 'category',
+	});
+	return data.stories.map((story) => ({ slug: story.slug }));
+}
+
+export default async function CategoryPage({ params }) {
+	const { slug } = await params;
+	const storyblokApi = getStoryblokApi();
+
+	let categoryStory;
+	try {
+		const { data } = await storyblokApi.get(`cdn/stories/categories/${slug}`, {
+			version: 'draft',
+		});
+		categoryStory = data.story;
+	} catch {
+		notFound();
+	}
+	if (!categoryStory) notFound();
+
+	const category = categoryStory.content;
+
+	return (
+		<div>
+			<h1 className="text-3xl font-bold mb-6">{category.title}</h1>
+			<FilteredPosts categorySlug={slug} />
+		</div>
+	);
+}
