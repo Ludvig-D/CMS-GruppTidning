@@ -11,7 +11,7 @@ export default async function ArticlesPage() {
 
 	return (
 		<div>
-			<h1 className="text-3xl font-bold mb-6">Artiklar</h1>
+			<h1 className="font-display text-3xl font-bold text-ink mb-6">Alla dispatcher</h1>
 			{data.stories.map((story) => (
 				<ArticleCard story={story} key={story.uuid} />
 			))}
