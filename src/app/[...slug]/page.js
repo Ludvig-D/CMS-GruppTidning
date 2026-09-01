@@ -4,7 +4,7 @@ import { getStoryblokApi } from '@/lib/storyblok';
 export default async function Page({ params }) {
 	const { slug } = await params;
 
-	let fullSlug = slug ? slug.join('/') : 'home';
+	let fullSlug = slug.join('/');
 
 	let sbParams = {
 		version: 'draft',
