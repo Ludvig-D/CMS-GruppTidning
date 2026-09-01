@@ -1,1 +1,56 @@
 @import "tailwindcss";
+
+@theme {
+	--color-ink: #17223b;
+	--color-ink-soft: #3a4358;
+	--color-paper: #efeae0;
+	--color-paper-raised: #faf7f0;
+	--color-signal: #d6402c;
+	--color-rule: #d9d2c2;
+
+	--font-display: var(--font-display), "Space Grotesk", sans-serif;
+	--font-body: var(--font-body), "Source Serif 4", serif;
+	--font-mono: var(--font-mono), "IBM Plex Mono", monospace;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.ticker-track {
+		animation: ticker-scroll 32s linear infinite;
+	}
+	.ticker-track:hover {
+		animation-play-state: paused;
+	}
+}
+
+@keyframes ticker-scroll {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+.prose-dispatch > p:first-of-type::first-letter {
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 3.5rem;
+	line-height: 3rem;
+	float: left;
+	padding-right: 0.5rem;
+	color: var(--color-signal);
+}
+
+.prose-dispatch blockquote {
+	border-left: 3px solid var(--color-signal);
+	padding-left: 1.25rem;
+	margin: 1.5rem 0;
+	font-style: italic;
+	font-size: 1.15rem;
+	color: var(--color-ink-soft);
+}
+
+.prose-dispatch p {
+	margin-bottom: 1.1rem;
+	line-height: 1.7;
+}
