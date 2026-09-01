@@ -81,8 +81,9 @@ sidor — Next.js prioriterar de explicita routarna ovan för sina segment.
 
 ## 3. Styling
 
-Ren CSS i `globals.css`, ingen ny styling-dependency. Kort/pill-badges,
-blå accentfärg, sidopanel "Kategorier" enbart på `/articles`-listan.
+Tailwind CSS (nytt: `tailwindcss`, `@tailwindcss/postcss` som devDependencies,
+`postcss.config.mjs`, `@import "tailwindcss";` i `globals.css`). Kort/pill-
+badges, blå accentfärg, sidopanel "Kategorier" enbart på `/articles`-listan.
 Newsletter-box och "Populärt"-widget från mockupen exkluderas — påhittat
 innehåll utan Storyblok-källa, inget i kravspecen kräver det.
 
