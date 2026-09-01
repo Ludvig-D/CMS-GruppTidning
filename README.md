@@ -76,3 +76,15 @@ Happy building!
 
 - Have questions, need help, want to chat with other users? [Join our Discord community](https://storyblok.com/join-discord).
 - Visit the Storyblok [Help Center](https://support.storyblok.com/hc/en-us).
+
+## Deploy (Vercel) + Storyblok webhook
+
+1. Import this repo into Vercel.
+2. Set env vars in the Vercel project: `STORYBLOK_DELIVERY_API_TOKEN`,
+   `STORYBLOK_REGION`, `SITE_URL` (your Vercel prod URL).
+3. Deploy. In Project Settings → Git → Deploy Hooks, create a hook and
+   copy its URL.
+4. In Storyblok: Settings → Webhooks → add the Deploy Hook URL, trigger on
+   "Story published" and "Story unpublished".
+5. In Storyblok: Settings → Visual Editor → set Location to the Vercel
+   prod URL.
