@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { render } from 'storyblok-rich-text-react-renderer';
+import { StoryblokStory } from '@storyblok/react/rsc';
 import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 async function getArticle(slug) {
@@ -46,29 +46,6 @@ export async function generateMetadata({ params }) {
 export default async function ArticlePage({ params }) {
 	const { slug } = await params;
 	const story = await getArticle(slug);
-	const author = story.content.author;
-	const date = story.first_published_at
-		? new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(story.first_published_at))
-		: null;
 
-	return (
-		<article>
-			<div className="flex items-center gap-3 mb-4 font-mono text-xs uppercase tracking-widest text-signal">
-				<span>{story.content.category}</span>
-				{date && (
-					<>
-						<span className="text-rule">·</span>
-						<span className="text-ink-soft">{date}</span>
-					</>
-				)}
-			</div>
-			<h1 className="font-display text-4xl font-bold text-ink leading-tight mb-3">{story.content.title}</h1>
-			{author && (
-				<a href={`/authors/${author.slug}`} className="font-mono text-xs uppercase tracking-wide text-ink-soft hover:text-signal">
-					Av {author.content.name}
-				</a>
-			)}
-			<div className="prose-dispatch font-body text-ink mt-6">{render(story.content.content)}</div>
-		</article>
-	);
+	return <StoryblokStory story={story} publishedAt={story.first_published_at} />;
 }
