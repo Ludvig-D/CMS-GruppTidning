@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import FilteredPosts from '@/components/FilteredPosts';
+import { StoryblokServerComponent } from '@storyblok/react/rsc';
 import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export async function generateStaticParams() {
@@ -26,16 +26,8 @@ export default async function CategoryPage({ params }) {
 	}
 	if (!categoryStory) notFound();
 
-	const category = categoryStory.content;
-
-	return (
-		<div>
-			<h1 className="font-display text-3xl font-bold text-ink mb-1 pb-3 border-b-2 border-signal inline-block">
-				{category.title}
-			</h1>
-			<div className="mt-6">
-				<FilteredPosts categorySlug={slug} />
-			</div>
-		</div>
-	);
+	// Render the story through Storyblok so the `filtered-posts` block in the
+	// category's body drives the article list (content-driven routing). The slug
+	// is forwarded as a prop because `filtered-posts` has no fields of its own.
+	return <StoryblokServerComponent blok={categoryStory.content} categorySlug={slug} />;
 }
