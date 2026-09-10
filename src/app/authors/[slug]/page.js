@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import ArticleCard from '@/components/ArticleCard';
+import { StoryblokStory } from '@storyblok/react/rsc';
 import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export async function generateStaticParams() {
@@ -33,15 +33,5 @@ export default async function AuthorPage({ params }) {
 		filter_query: { author: { in: authorStory.uuid } },
 	});
 
-	return (
-		<div>
-			<h1 className="text-3xl font-bold mb-2">{authorStory.content.name}</h1>
-			<p className="text-gray-600 mb-8">{authorStory.content.bio}</p>
-			<h2 className="text-xl font-semibold mb-4">Artiklar</h2>
-			{articlesData.stories.length === 0 && <p className="text-gray-500">Inga artiklar än.</p>}
-			{articlesData.stories.map((story) => (
-				<ArticleCard story={story} key={story.uuid} />
-			))}
-		</div>
-	);
+	return <StoryblokStory story={authorStory} articles={articlesData.stories} />;
 }

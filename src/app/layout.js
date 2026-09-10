@@ -1,7 +1,6 @@
 import './globals.css';
 import StoryblokProvider from '@/components/StoryblokProvider';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { StoryblokServerComponent } from '@storyblok/react/rsc';
 import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export const metadata = {
@@ -11,7 +10,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
 	const storyblokApi = getStoryblokApi();
-	let config = {};
+	let config = { component: 'config' };
 	try {
 		const { data } = await storyblokApi.get('cdn/stories/config', { version: SB_VERSION });
 		config = data.story.content;
@@ -23,9 +22,7 @@ export default async function RootLayout({ children }) {
 		<StoryblokProvider>
 			<html lang="sv">
 				<body>
-					<Header navLinks={config.header || []} />
-					<main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
-					<Footer text={config.footer_text} />
+					<StoryblokServerComponent blok={config}>{children}</StoryblokServerComponent>
 				</body>
 			</html>
 		</StoryblokProvider>

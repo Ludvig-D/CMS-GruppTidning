@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import FilteredPosts from '@/components/FilteredPosts';
+import { StoryblokStory } from '@storyblok/react/rsc';
 import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
 export async function generateStaticParams() {
@@ -26,12 +26,5 @@ export default async function CategoryPage({ params }) {
 	}
 	if (!categoryStory) notFound();
 
-	const category = categoryStory.content;
-
-	return (
-		<div>
-			<h1 className="text-3xl font-bold mb-6">{category.title}</h1>
-			<FilteredPosts categorySlug={slug} />
-		</div>
-	);
+	return <StoryblokStory story={categoryStory} categorySlug={slug} />;
 }
