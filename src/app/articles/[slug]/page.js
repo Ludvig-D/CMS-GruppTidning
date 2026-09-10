@@ -47,5 +47,5 @@ export default async function ArticlePage({ params }) {
 	const { slug } = await params;
 	const story = await getArticle(slug);
 
-	return <StoryblokStory story={story} />;
+	return <StoryblokStory story={story} publishedAt={story.first_published_at} />;
 }

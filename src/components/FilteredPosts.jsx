@@ -12,7 +12,7 @@ export default async function FilteredPosts({ categorySlug }) {
 	});
 
 	if (data.stories.length === 0) {
-		return <p className="text-gray-500">Inga artiklar i denna kategori än.</p>;
+		return <p className="font-body text-ink-soft">Inga artiklar i denna kategori än.</p>;
 	}
 
 	return data.stories.map((story) => <ArticleCard story={story} key={story.uuid} />);

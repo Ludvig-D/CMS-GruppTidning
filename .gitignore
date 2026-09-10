@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/docs
 
 # next.js
 /.next/
@@ -39,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+CLAUDE.md
+AGENTS.md
+/.claude
