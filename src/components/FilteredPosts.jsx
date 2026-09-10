@@ -1,7 +1,8 @@
+import { storyblokEditable } from '@storyblok/react/rsc';
 import ArticleCard from '@/components/ArticleCard';
 import { getStoryblokApi, SB_VERSION } from '@/lib/storyblok';
 
-export default async function FilteredPosts({ categorySlug }) {
+export default async function FilteredPosts({ blok, categorySlug }) {
 	if (!categorySlug) return null;
 	const storyblokApi = getStoryblokApi();
 	const { data } = await storyblokApi.get('cdn/stories', {
@@ -11,9 +12,13 @@ export default async function FilteredPosts({ categorySlug }) {
 		filter_query: { category: { in: categorySlug } },
 	});
 
-	if (data.stories.length === 0) {
-		return <p className="font-body text-ink-soft">Inga artiklar i denna kategori än.</p>;
-	}
-
-	return data.stories.map((story) => <ArticleCard story={story} key={story.uuid} />);
+	return (
+		<div {...storyblokEditable(blok)}>
+			{data.stories.length === 0 ? (
+				<p className="font-body text-ink-soft">Inga artiklar i denna kategori än.</p>
+			) : (
+				data.stories.map((story) => <ArticleCard story={story} key={story.uuid} />)
+			)}
+		</div>
+	);
 }

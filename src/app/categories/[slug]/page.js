@@ -26,5 +26,8 @@ export default async function CategoryPage({ params }) {
 	}
 	if (!categoryStory) notFound();
 
+	// Render the story through Storyblok so the `filtered-posts` block in the
+	// category's body drives the article list (content-driven routing). The slug
+	// is forwarded as a prop because `filtered-posts` has no fields of its own.
 	return <StoryblokStory story={categoryStory} categorySlug={slug} />;
 }
