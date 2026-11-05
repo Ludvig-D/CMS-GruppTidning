@@ -1,6 +1,8 @@
 
 # CMS-GruppTidning
 
+> School group project at **Nackademin – Webb25**.
+
 Content-driven news site built with Next.js and Storyblok as headless CMS.
 
 ## Setup
