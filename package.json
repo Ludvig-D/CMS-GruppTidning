@@ -18,11 +18,11 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@netlify/plugin-nextjs": "^5.15.13",
-    "@tailwindcss/postcss": "^4.3.3",
+    "@netlify/plugin-nextjs": "^5.16.6",
+    "@tailwindcss/postcss": "^4.3.4",
     "eslint": "^10",
-    "eslint-config-next": "16.3.3",
-    "storyblok-js-client": "^7.7.6",
+    "eslint-config-next": "16.4.5",
+    "storyblok-js-client": "^7.9.0",
     "tailwindcss": "^4.3.3"
   }
 }
